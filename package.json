@@ -1,0 +1,14 @@
+{
+  "name": "chrome-devtools-mcp-wrapper",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "MCP proxy wrapper for chrome-devtools-mcp with tool filtering, Chrome lifecycle management and anti-detect",
+  "main": "index.mjs",
+  "scripts": {
+    "start": "node index.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.1",
+    "playwright": "^1.52.0"
+  }
+}
