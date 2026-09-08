@@ -36,12 +36,13 @@ The upstream server itself runs **unmodified** — the wrapper spawns it via `np
 ## Quickstart
 
 ```bash
+git clone https://github.com/CornWorld/chrome-devtools-mcp-wrapper.git
 cd chrome-devtools-mcp-wrapper
 npm install
 
 # smoke test: launches Chrome (or reuses a running one) and starts the proxy
 npm start -- --profile=default
-git clone https://github.com/CornWorld/chrome-devtools-mcp-wrapper.git
+```
 
 Register it with your MCP client instead of the plain server. For Claude-style `mcp.json`:
 
