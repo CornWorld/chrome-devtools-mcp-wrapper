@@ -15,5 +15,13 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.1",
     "playwright": "^1.52.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CornWorld/chrome-devtools-mcp-wrapper.git"
+  },
+  "bugs": {
+    "url": "https://github.com/CornWorld/chrome-devtools-mcp-wrapper/issues"
+  },
+  "homepage": "https://github.com/CornWorld/chrome-devtools-mcp-wrapper#readme"
 }
