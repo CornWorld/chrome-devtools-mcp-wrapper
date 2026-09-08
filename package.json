@@ -1,11 +1,16 @@
 {
   "name": "chrome-devtools-mcp-wrapper",
   "version": "1.0.0",
+  "description": "MCP proxy wrapper for chrome-devtools-mcp: share one Chrome across MCP clients, with Chrome lifecycle management, tool filtering and anti-detect",
+  "license": "MIT",
   "type": "module",
-  "description": "MCP proxy wrapper for chrome-devtools-mcp with tool filtering, Chrome lifecycle management and anti-detect",
   "main": "index.mjs",
   "scripts": {
+    "prestart": "node -e \"const fs = require('fs'); ['@modelcontextprotocol/sdk', 'playwright'].forEach(m => { if (!fs.existsSync('node_modules/' + m)) { console.error('Missing dependency: ' + m + ' — run npm install'); process.exit(1) } })\"",
     "start": "node index.mjs"
+  },
+  "engines": {
+    "node": ">=18"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.1",
