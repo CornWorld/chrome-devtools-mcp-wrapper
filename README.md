@@ -60,7 +60,7 @@ Register it with your MCP client instead of the plain server. For Claude-style `
 }
 ```
 
-For [OMP](https://github.com/can1357/oh-my-pi), put the same block in `~/.omp/agent/mcp.json` (user scope — applies to every project) or `<project>/.omp/mcp.json` (project scope).
+For [OMP](https://github.com/can1357/oh-my-pi), put the same block in `~/.omp/agent/mcp.json` (user scope — applies to every project) or `<project>/.mcp.json` (project scope). Project scope is picked up at **session start** (with a trust approval); a mid-session `/mcp reload` only refreshes user-scope servers.
 
 See [.mcp.json.example](.mcp.json.example) for a config with tool filtering and debug logging enabled.
 
@@ -82,6 +82,8 @@ node index.mjs [options] [-- upstream-args...]
 | `--browser-url=<url>` | CDP endpoint of an externally managed Chrome (with `--no-chrome`). |
 | `--debug` | Verbose wrapper logging (or `DEBUG=wrapper:*`). |
 | `-- <args>` | Anything after `--` is passed through to the upstream server verbatim. |
+
+Environment: `CHROME_PATH=<binary>` overrides Chrome discovery — use it to pin Chrome-for-Testing or a specific Playwright Chromium build (e.g. to load extensions via `--chrome-arg=--load-extension=...`, which requires an unbranded binary and a real profile).
 
 ### Profiles
 
@@ -112,8 +114,26 @@ Each session writes `~/.cache/cdp-wrapper/logs/wrapper-YYYYMMDD-HHMMSS-<pid>.log
 
 ## Notes & disclaimers
 
-- The anti-detect layer exists to keep automation from being *needlessly* flagged while testing your own sites and apps. Using it against services you don't have permission to automate may violate their terms of service — that's on you.
+- The anti-detect layer exists to keep automation from *needlessly* flagged while testing your own sites and apps. Using it against services you don't have permission to automate may violate their terms of service — that's on you.
 - The wrapper is a transparent pass-through for MCP traffic; it does not inspect or alter tool results beyond dropping filtered tools.
+
+## TODO
+
+- [ ] **Surface wrapper capabilities as MCP server `instructions`** so MCP clients (and their models) see them without reading this README: profile sharing/isolation semantics (`--profile`, `shared-lite`), `--chrome-arg` passthrough (extensions, GPU flags, …), tool filtering (`--block-tools`/`--allow-only`), custom tools (`--init-script`), and `CHROME_PATH` pinning.
+- [ ] Consider a `--list-flags` flag that prints the effective CLI reference, and a startup log line echoing the resolved profile + Chrome binary + extra args (including extension load errors from stderr).
+
+## Loading unpacked extensions (`--chrome-arg=--load-extension`)
+
+Verified on unbranded Chrome-for-Testing 150, **headed and `--headless=new`**: a valid MV3 unpacked extension loads via `--chrome-arg=--load-extension=/path/to/dist`, its service worker appears in CDP targets and content scripts inject normally. Branded Google Chrome 137+ ignores `--load-extension` (upstream change) — use CfT/Chromium via `CHROME_PATH`.
+
+The trap that costs hours: an unpacked extension with an **invalid manifest field loads with no visible error** (e.g. `content_scripts[].matches` must be an *array*; a string fails schema validation). Symptom: the extension looks half-alive — a service worker may show up in targets — but content scripts silently never inject. An unvalidated canary extension will happily report false negatives, sending you chasing keychain/headless ghosts. Diagnose instead with:
+
+```bash
+# extension load errors land on stderr
+chrome --enable-logging=stderr --v=1 --load-extension=/path/to/ext about:blank
+```
+
+or check the error card on `chrome://extensions` in a headed session.
 
 ## License
 
